@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <div class="subscribe-form-container">
+      <h2>HTML Forms</h2>
+
+      <!-- <form action="/.netlify/functions/use_mailgun" method="post"> -->
+      <form method="post">
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" value="" /><br />
+        <label for="email">Email:</label><br />
+        <input type="email" id="email" name="email" value="" /><br /><br />
+        <input type="submit" value="Submit" id="submitForm" />
+      </form>
+
+      <!-- <div className="subscribe-form-container">
+        <form onSubmit="{handleSubmit}">
+          <label htmlFor="name">Name</label>
+          <input type="text" id="name" name="name" required />
+          <label htmlFor="email">Email</label>
+          <input type="text" id="email" name="email" required />
+          <button type="submit">Subscribe</button>
+        </form>
+      </div> -->
+    </div>
+  </body>
+
+  <script>
+    async function handleSubmit(event) {
+      event.preventDefault();
+      // console.info("EVENT1: ", event);
+
+      const form = new FormData(event.target);
+      const data = {
+        name: form.get("name"),
+        email: form.get("email"),
+      };
+      console.warn("EVENT1a: ", data);
+      // setTimeout(() => alert("check the log before timer expires"), 15000);
+      // const response = await fetch("/.netlify/functions/use_mailgun", {
+      let response;
+      try {
+        response = await fetch("./.netlify/functions/triggerSubscribeEmail", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // body: JSON.stringify(data),
+          body: JSON.stringify({
+            subscriberName: data.name,
+            subscriberEmail: data.email,
+            inviteeEmail: "info@testemail.com",
+          }),
+        });
+      } catch (error) {
+        console.log("TRIGGER Error: ", error);
+
+        return {
+          statusCode: error.statusCode || 500,
+          body: `Error Sending email: ${error.message}`,
+        };
+      }
+      // console.log("EVENT1b", result);
+      console.log("EVENT1b", response);
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ body: response.message }),
+      };
+
+      // if (error) {
+      //   console.error("ERROR33: ", error);
+      // }
+    }
+
+    // const handleSubmit = async (event) => {
+    //   console.log("FREND: ", event);
+    //   event.preventDefault();
+    //   const target = event.target;
+
+    //   const data = {
+    //     subscriberName: target.name,
+    //     subscriberEmail: target.email,
+    //   };
+
+    //   fetch("./.netlify/functions/triggerSubscribeEmail", {
+    //     method: "POST",
+    //     body: JSON.stringify({
+    //       subscriberName: data.subscriberName,
+    //       subscriberEmail: data.subscriberEmail,
+    //       inviteeEmail: "info@testemail.com",
+    //     }),
+    //   });
+    // };
+    // goForm = document.getElementById("submitForm");
+    // goForm.addEventListener("submit", handleSubmit);
+
+    // document.querySelector("form").addEventListener("submit", (event) => {
+    //   event.preventDefault();
+    //   console.log("submit");
+    // });
+    document.querySelector("form").addEventListener("submit", handleSubmit);
+  </script>
+</html>

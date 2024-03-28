@@ -32,7 +32,7 @@ exports.handler = async (event) => {
       JSON.stringify({
         from: requestBody.subscriberEmail,
 
-        to: "dma4115@gmail.com",
+        to: process.env.NETLIFY_TEST_TOEMAIL,
         subject: "You've been subscribed via test domain",
         parameters: {
           name: requestBody.subscriberName,
